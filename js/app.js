@@ -33,14 +33,14 @@ const ic=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"${n==
 const NAV=[['dashboard','Dashboard'],['inventory','Inventory'],['expiry','Expiry watch'],['marketplace','Marketplace'],['orders','Orders'],['outlets','Outlets'],['reports','Reports'],['settings','Settings']];
 
 const NAME=Object.fromEntries(NAV);
-const tbl=(cols,rows,empty='Nothing here yet.',attr=()=>'')=>rows.length?`<table><thead><tr>${cols.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr ${attr(r)}>${cols.map(c=>`<td class="${c.r?'r':''}" data-label="${c.h}">${c.f(r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<p class="empty">${empty}</p>`;
+const tbl=(cols,rows,empty='Nothing here yet.',attr=()=>'',cls='')=>rows.length?`<table class="${cls}"><thead><tr>${cols.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr ${attr(r)}>${cols.map(c=>`<td class="${c.r?'r':''}" data-label="${c.h}">${c.f(r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<p class="empty">${empty}</p>`;
 const head=(t,sub,extra='')=>`<div class="head"><div><h1>${t}</h1>${sub?`<p>${sub}</p>`:''}</div><div class="row">${extra}</div></div>`;
 const outSel=()=>`<select id="outlet" aria-label="Outlet"><option value="all">All outlets</option>${S.outlets.map(o=>`<option ${S.outlet===o?'selected':''}>${o}</option>`).join('')}</select>`;
 const status=o=>{const P=S.products.filter(p=>p.outlet===o),l=P.filter(isLow).length,e=P.filter(isExp).length;return l>=3?['Restock','warn']:e>=2?['Check expiry','warn']:['Healthy','ok']};
 
-function chart(v,f){const m=mob(),W=m?340:560,H=m?190:210,L=m?56:66,B=26,T=10,R=m?14:30,mx=(Math.max(...v)||1)*1.15,x=i=>L+i*(W-L-R)/6,y=n=>T+(H-T-B)*(1-n/mx);let g='';
+function chart(v,f){const m=mob(),W=m?Math.max(280,Math.min(innerWidth-62,640)):560,H=m?190:210,L=m?64:66,B=26,T=10,R=m?24:30,mx=(Math.max(...v)||1)*1.15,x=i=>L+i*(W-L-R)/6,y=n=>T+(H-T-B)*(1-n/mx);let g='';
 for(let i=0;i<=3;i++){const n=mx*i/3;g+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${y(n)}" y2="${y(n)}"/><text x="${L-8}" y="${y(n)+4}" text-anchor="end">${f(n)}</text>`}
-const lab=v.map((_,i)=>{const d=new Date(today);d.setDate(d.getDate()-6+i);return `<text x="${x(i)}" y="${H-6}" text-anchor="middle">${d.getDate()} ${d.toLocaleString('en',{month:'short'})}</text>`}).join('');
+const lab=v.map((_,i)=>{if(m&&i%2)return '';const d=new Date(today);d.setDate(d.getDate()-6+i);return `<text x="${x(i)}" y="${H-6}" text-anchor="middle">${d.getDate()} ${d.toLocaleString('en',{month:'short'})}</text>`}).join('');
 const pts=v.map((n,i)=>x(i)+','+y(n)).join(' ');
 return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Last 7 days"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2352C8" stop-opacity=".25"/><stop offset="1" stop-color="#2352C8" stop-opacity="0"/></linearGradient></defs>${g}<polygon fill="url(#ag)" stroke="none" points="${x(0)},${y(0)} ${pts} ${x(6)},${y(0)}"/><polyline class="ln" points="${pts}"/>${v.map((n,i)=>`<rect class="pt" x="${x(i)-3.5}" y="${y(n)-3.5}" width="7" height="7" rx="3.5"><title>${f(n)}</title></rect>`).join('')}${lab}</svg>`}
 
@@ -65,12 +65,12 @@ V.dashboard=()=>{
  <div class="panel"><div class="ph"><h2>Recent activity</h2></div>${S.activity.slice(0,5).map(a=>`<div class="li"><div class="t"><b style="font-weight:500">${esc(a.t)}</b><span>${esc(a.s)}, ${ago(a.at)}</span></div></div>`).join('')}</div>
  <div class="promo"><h2>Need stock? Check what others are selling.</h2><p>Other retailers list surplus at about half the regular price.</p><a class="btn" href="#marketplace">Go to marketplace</a></div></div></div>`};
 const expRow=p=>`<div class="li">${img(p.img)}<div class="t"><b style="font-weight:500">${esc(p.name)}</b><span>${esc(p.brand)}, ${p.outlet}</span><span class="${dayCls(left(p))}">${dayTxt(left(p))}</span></div><div class="rt"><span>${p.qty} units</span><button class="btn sm" data-list="${p.id}">Sell</button></div></div>`;
-const outletTable=()=>tbl([{h:'Outlet',f:o=>o},{h:'Products',r:1,f:o=>S.products.filter(p=>p.outlet===o).length},{h:'In stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&p.qty>0).length},{h:'Low stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isLow(p)).length},{h:'Expiring soon',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isExp(p)).length},{h:'Status',f:o=>{const s=status(o);return `<span class="${s[1]}">${s[0]}</span>`}}],S.outlets);
+const outletTable=()=>tbl([{h:'Outlet',f:o=>o},{h:'Products',r:1,f:o=>S.products.filter(p=>p.outlet===o).length},{h:'In stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&p.qty>0).length},{h:'Low stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isLow(p)).length},{h:'Expiring soon',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isExp(p)).length},{h:'Status',f:o=>{const s=status(o);return `<span class="${s[1]}">${s[0]}</span>`}}],S.outlets,'Nothing here yet.',()=>'','t-out');
 
 V.inventory=()=>{
  const t=q.toLowerCase(),P=prods().filter(p=>!t||[p.name,p.brand,p.sku,p.outlet].join(' ').toLowerCase().includes(t));
  return head('Inventory',`${P.length} products${t?` matching "${esc(q)}"`:''}`,outSel()+'<button class="btn" id="csv">Download CSV</button><button class="btn pri" id="add">Add product</button>')+
- `<div class="panel">${tbl([{h:'Product',f:p=>`<b style="font-weight:500">${esc(p.name)}</b><br><span class="mute">${esc(p.brand)}, ${p.sku}</span>`},{h:'Outlet',f:p=>p.outlet},{h:'Category',f:p=>p.cat},{h:'Price',r:1,f:p=>rp(p.price)},{h:'Quantity',r:1,f:p=>`<span class="${isLow(p)?'bad':''}">${p.qty}</span> <span class="mute">/ min ${p.min}</span>`},{h:'Expiry',f:p=>`<span class="${dayCls(left(p))}">${dayTxt(left(p))}</span>`},{h:'',f:p=>`<div class="act"><button class="btn sm" data-qty="${p.id}:-1" aria-label="Remove one">-</button><button class="btn sm" data-qty="${p.id}:1" aria-label="Add one">+</button><button class="btn sm" data-del="${p.id}">Delete</button></div>`}],P,'No product matches that search.')}</div>`};
+ `<div class="panel">${tbl([{h:'Product',f:p=>`<b style="font-weight:500">${esc(p.name)}</b><span class="mute sub">${esc(p.brand)}, ${p.sku}</span>`},{h:'Outlet',f:p=>p.outlet},{h:'Category',f:p=>p.cat},{h:'Price',r:1,f:p=>rp(p.price)},{h:'Quantity',r:1,f:p=>`<span class="${isLow(p)?'bad':''}">${p.qty}</span> <span class="mute">/ min ${p.min}</span>`},{h:'Expiry',f:p=>`<span class="${dayCls(left(p))}">${dayTxt(left(p))}</span>`},{h:'',f:p=>`<div class="act"><button class="btn sm" data-qty="${p.id}:-1" aria-label="Remove one">-</button><button class="btn sm" data-qty="${p.id}:1" aria-label="Add one">+</button><button class="btn sm" data-del="${p.id}">Delete</button></div>`}],P,'No product matches that search.',()=>'','t-inv')}</div>`};
 
 V.expiry=()=>{const P=prods().filter(isExp).sort((a,b)=>left(a)-left(b));
  return head('Expiry watch',`Products expiring within ${S.settings.alertDays} days. Change this in Settings.`,outSel())+`<div class="panel">${P.map(expRow).join('')||'<p class="empty">Nothing is close to expiry.</p>'}</div>`};
@@ -83,10 +83,10 @@ V.marketplace=()=>{
  `<h2 style="margin-bottom:10px">Available near you</h2><div class="grid" style="margin-bottom:28px">${S.listings.map(l=>card(l)).join('')||'<p class="empty">No listings right now.</p>'}</div>
  <h2 style="margin-bottom:10px">Your listings</h2><div class="grid">${S.mine.map(l=>card(l,1)).join('')||'<p class="mute">Nothing listed. Use Sell on the Expiry watch page.</p>'}</div>`};
 
-V.orders=()=>head('Orders','Sales and purchases made through the marketplace.')+`<div class="panel">${tbl([{h:'Order',f:o=>o.id},{h:'Date',f:o=>o.date},{h:'Type',f:o=>o.type},{h:'Item',f:o=>`${esc(o.item)} x ${o.qty}`},{h:'With',f:o=>esc(o.party)},{h:'Total',r:1,f:o=>rp(o.total)},{h:'Status',f:o=>o.status},{h:'',f:o=>o.status==='Delivered'?'':`<button class="btn sm" data-adv="${o.id}">Mark ${o.status==='Pending'?'in transit':'delivered'}</button>`}],S.orders,'No orders yet.')}</div>`;
+V.orders=()=>head('Orders','Sales and purchases made through the marketplace.')+`<div class="panel">${tbl([{h:'Order',f:o=>o.id},{h:'Date',f:o=>o.date},{h:'Type',f:o=>o.type},{h:'Item',f:o=>`${esc(o.item)} x ${o.qty}`},{h:'With',f:o=>esc(o.party)},{h:'Total',r:1,f:o=>rp(o.total)},{h:'Status',f:o=>`<span class="${o.status==='Delivered'?'ok':o.status==='Pending'?'mute':'warn'}">${o.status}</span>`},{h:'',f:o=>o.status==='Delivered'?'':`<button class="btn sm" data-adv="${o.id}">Mark ${o.status==='Pending'?'in transit':'delivered'}</button>`}],S.orders,'No orders yet.',()=>'','t-ord')}</div>`;
 
 V.outlets=()=>head('Outlets','Stock position per outlet.')+`<div class="panel">${outletTable()}</div>`+
- `<div class="panel">${tbl([{h:'Outlet',f:o=>o},{h:'Stock value',r:1,f:o=>rp(sum(S.products.filter(p=>p.outlet===o),p=>p.qty*p.price))},{h:'Value expiring soon',r:1,f:o=>rp(sum(S.products.filter(p=>p.outlet===o&&isExp(p)),p=>p.qty*p.price))}],S.outlets)}</div>`;
+ `<div class="panel">${tbl([{h:'Outlet',f:o=>o},{h:'Stock value',r:1,f:o=>rp(sum(S.products.filter(p=>p.outlet===o),p=>p.qty*p.price))},{h:'Value expiring soon',r:1,f:o=>rp(sum(S.products.filter(p=>p.outlet===o&&isExp(p)),p=>p.qty*p.price))}],S.outlets,'Nothing here yet.',()=>'','t-val')}</div>`;
 
 V.reports=()=>{
  const sales=S.orders.filter(o=>o.type==='Sale'&&o.status==='Delivered'),u=sum(sales,o=>o.qty),got=sum(sales,o=>o.total*.97),risk=sum(S.products.filter(isExp),p=>p.qty*p.price);
@@ -194,5 +194,6 @@ function render(){
 }
 window.addEventListener('hashchange',()=>{if(dlg.open)dlg.close();render()});
 matchMedia('(max-width:900px)').addEventListener('change',render);
+let rw=innerWidth,rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(mob()&&Math.abs(innerWidth-rw)>20){rw=innerWidth;render()}},150)});
 render();
 })();
