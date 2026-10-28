@@ -16,7 +16,7 @@ To publish on GitHub Pages: push the folder to a repository, then Settings > Pag
 
 ## Visuals
 
-- Maps: drawn in SVG (works offline, schematic, not to scale). Outlets map on Dashboard and Outlets, sellers-near-you map on Marketplace. Tap a pin to jump to its stock or listings.
+- Maps: drawn in SVG (works offline, schematic, not to scale). Outlets map on the Dashboard, sellers-near-you map on Marketplace. Tap a pin to jump to its stock or listings.
 - Product illustrations: `assets/products/*.svg`, picked by the `img` key in `js/data.js`.
 - Shop fronts: generated per outlet or seller in `shop()` in `js/app.js`.
 
@@ -29,7 +29,6 @@ To publish on GitHub Pages: push the folder to a repository, then Settings > Pag
 | Expiry watch | Products inside the alert window, with a Sell action |
 | Marketplace | Buy nearby surplus (4% fee: 3% seller, 1% buyer, optional 1% insurance); list your own stock |
 | Orders | Track sales and purchases; delivering a purchase adds it to stock |
-| Outlets | Per-outlet stock position |
 | Reports | Revenue recovered, food saved, CO2e avoided |
 | Settings | ERP/POS connection, plan, alert window, WhatsApp alerts, reset |
 
