@@ -2,7 +2,7 @@
 const KEY='stocksync.v2',$=(s,r=document)=>r.querySelector(s);
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!Array.isArray(S.products))S=structuredClone(SEED);
-S.ui=S.ui||{guide:true};S.settings=Object.assign({},SEED.settings,S.settings);S.settings.erp=Object.assign({},SEED.settings.erp,S.settings.erp);
+S.settings=Object.assign({},SEED.settings,S.settings);S.settings.erp=Object.assign({},SEED.settings.erp,S.settings.erp);
 S.mine=S.mine||[];S.listings=S.listings||[];S.orders=S.orders||[];S.activity=S.activity||[];
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 /* dates: always local time (toISOString is UTC and shifted every date by one day in Indonesia) */
@@ -25,7 +25,7 @@ const img=n=>`<img src="assets/products/${n||'box'}.svg" alt="">`;
 const ago=t=>{const m=Math.round((Date.now()-t)/6e4);if(m<1)return'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+(h===1?' hour ago':' hours ago');const d=Math.round(h/24);return d+(d===1?' day ago':' days ago')};
 const note=(t,s)=>{S.activity.unshift({t,s,at:Date.now()});S.activity=S.activity.slice(0,12)};
 const toast=m=>{const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.append(e);setTimeout(()=>e.remove(),2200)};
-let tab='value',q='',hlKey=null,pend=null,lastK='';
+let tab='value',q='',lastK='';
 
 /* icons: plain 24px strokes, drawn for this project */
 const IC={dashboard:'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z',inventory:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',expiry:'M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2',marketplace:'M3 9l2-5h14l2 5M3 9a3 3 0 006 0 3 3 0 006 0 3 3 0 006 0M5 13v8h14v-8M10 21v-5h4v5',orders:'M8 3h8v4H8zM6 5H5v16h14V5h-1M9 12h6M9 16h6',outlets:'M12 21s-7-6-7-12a7 7 0 0114 0c0 6-7 12-7 12zM12 7a2.5 2.5 0 100 5 2.5 2.5 0 000-5',reports:'M4 20V11M10 20V4M16 20v-7M2 21h20',settings:'M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6',bell:'M6 9a6 6 0 0112 0c0 6 2 7 2 8H4c0-1 2-2 2-8zM10 21h4',more:'M5 12h.01M12 12h.01M19 12h.01'};
@@ -33,32 +33,6 @@ const ic=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"${n==
 const NAV=[['dashboard','Dashboard'],['inventory','Inventory'],['expiry','Expiry watch'],['marketplace','Marketplace'],['orders','Orders'],['outlets','Outlets'],['reports','Reports'],['settings','Settings']];
 
 const NAME=Object.fromEntries(NAV);
-/* the four steps of the service, and which app pages belong to each (matches the Service Visualization slide) */
-const EX={name:'Fresh milk 1L',outlet:'Kemang',buyer:'Warung Sari Rasa',units:20,order:'SS-1038'};
-const FLOW=[
- {n:1,t:'Connect',d:'Link the existing ERP/POS through the API. No system replacement.',pages:['settings']},
- {n:2,t:'Monitor',d:'Live stock and expiry dates per outlet, with WhatsApp alerts before the deadline.',pages:['dashboard','expiry'],more:['inventory','outlets']},
- {n:3,t:'Match',d:'Surplus is paired with nearby retailers and warungs at about half price.',pages:['marketplace']},
- {n:4,t:'Deliver and report',d:'Couriers deliver; the broker fee applies only on a sale. Food saved is reported.',pages:['orders','reports']}];
-const stepOf=pg=>FLOW.find(f=>f.pages.includes(pg)||(f.more||[]).includes(pg));
-const exProd=()=>S.products.find(p=>p.name===EX.name&&p.outlet===EX.outlet);
-const inDays=d=>d<0?'expired':d===0?'today':d===1?'in 1 day':'in '+d+' days';
-function exampleOf(n){
- const m=exProd();
- if(n===1)return null;
- if(n===2)return{p:m?`<b>Alert.</b> ${m.qty} units expire ${inDays(left(m))} at ${rp(m.price)} each.`:'<b>Alert.</b> 48 units expire in 1 day at Rp 18.500 each.',b:'Show the alert',go:2};
- if(n===3)return{p:`<b>Match.</b> Listed at ${rp(m?Math.round(m.price/2):9250)}. ${EX.buyer} buys ${EX.units} units.`,b:'List the milk',go:3};
- const o=S.orders.find(x=>x.id===EX.order);
- return{p:o?`<b>Result.</b> ${rp(o.total)} sale, ${rp(o.total*.97)} after the 3% seller fee.`:'<b>Result.</b> Rp 185.000 sale, Rp 179.450 after the 3% seller fee.',b:'Show the order',go:4}}
-function flow(k){
- if(!S.ui.guide)return `<div class="flowbar"><button class="link" data-guide="1">Show process guide</button></div>`;
- const cur=stepOf(k),ex=cur&&exampleOf(cur.n),sup=cur&&(cur.more||[]).includes(k);
- const pills=f=>f.pages.map(p=>`<a href="#${p}" class="${p===k?'on':''}">${NAME[p]}</a>`).join('');
- return `<section class="flow" aria-label="How StockSync works">
- <ol class="steps">${FLOW.map(f=>`<li class="st ${cur&&cur.n===f.n?'on':''}" ${cur&&cur.n===f.n?'aria-current="step"':''}><a class="sh" href="#${f.pages[0]}"><i>${f.n}</i><b>${f.t}</b></a><div class="pg">${pills(f)}</div></li>`).join('')}</ol>
- ${cur?`<div class="fd"><div class="ft"><p><b>Step ${cur.n} of 4, ${cur.t}.</b> ${cur.d}</p><div class="pg m">${pills(cur)}</div>${sup?`<p class="small">${NAME[k]} supports this step. It holds the data the alerts are built from.</p>`:''}${cur.n===1?`<p class="small">${S.settings.erp.on?'Connected. Last sync '+ago(S.settings.erp.last)+'.':'Not connected yet.'}</p>`:''}</div>
- ${ex?`<div class="fx"><span>Example, ${EX.name}, ${EX.outlet}</span><p>${ex.p}</p><button class="btn" data-exgo="${ex.go}">${ex.b}</button></div>`:''}</div>`:''}
- <button class="link hide" data-guide="0">Hide guide</button></section>`}
 const tbl=(cols,rows,empty='Nothing here yet.',attr=()=>'')=>rows.length?`<table><thead><tr>${cols.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr ${attr(r)}>${cols.map(c=>`<td class="${c.r?'r':''}" data-label="${c.h}">${c.f(r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<p class="empty">${empty}</p>`;
 const head=(t,sub,extra='')=>`<div class="head"><div><h1>${t}</h1>${sub?`<p>${sub}</p>`:''}</div><div class="row">${extra}</div></div>`;
 const outSel=()=>`<select id="outlet" aria-label="Outlet"><option value="all">All outlets</option>${S.outlets.map(o=>`<option ${S.outlet===o?'selected':''}>${o}</option>`).join('')}</select>`;
@@ -90,9 +64,7 @@ V.dashboard=()=>{
  <div><div class="panel"><div class="ph"><h2>Expiry watch</h2><a class="link" href="#expiry">View all</a></div>${ex.slice(0,3).map(expRow).join('')||'<p class="empty">All clear.</p>'}</div>
  <div class="panel"><div class="ph"><h2>Recent activity</h2></div>${S.activity.slice(0,5).map(a=>`<div class="li"><div class="t"><b style="font-weight:500">${esc(a.t)}</b><span>${esc(a.s)}, ${ago(a.at)}</span></div></div>`).join('')}</div>
  <div class="promo"><h2>Need stock? Check what others are selling.</h2><p>Other retailers list surplus at about half the regular price.</p><a class="btn" href="#marketplace">Go to marketplace</a></div></div></div>`};
-const isEx=p=>p.name===EX.name&&p.outlet===EX.outlet;
-const pill=()=>S.ui.guide?'<em class="pill">Example</em>':'';
-const expRow=p=>`<div class="li" ${isEx(p)?'data-ex="milk"':''}>${img(p.img)}<div class="t"><b style="font-weight:500">${esc(p.name)}</b>${isEx(p)?pill():''}<span>${esc(p.brand)}, ${p.outlet}</span><span class="${dayCls(left(p))}">${dayTxt(left(p))}</span></div><div class="rt"><span>${p.qty} units</span><button class="btn sm" data-list="${p.id}">Sell</button></div></div>`;
+const expRow=p=>`<div class="li">${img(p.img)}<div class="t"><b style="font-weight:500">${esc(p.name)}</b><span>${esc(p.brand)}, ${p.outlet}</span><span class="${dayCls(left(p))}">${dayTxt(left(p))}</span></div><div class="rt"><span>${p.qty} units</span><button class="btn sm" data-list="${p.id}">Sell</button></div></div>`;
 const outletTable=()=>tbl([{h:'Outlet',f:o=>o},{h:'Products',r:1,f:o=>S.products.filter(p=>p.outlet===o).length},{h:'In stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&p.qty>0).length},{h:'Low stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isLow(p)).length},{h:'Expiring soon',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isExp(p)).length},{h:'Status',f:o=>{const s=status(o);return `<span class="${s[1]}">${s[0]}</span>`}}],S.outlets);
 
 V.inventory=()=>{
@@ -111,7 +83,7 @@ V.marketplace=()=>{
  `<h2 style="margin-bottom:10px">Available near you</h2><div class="grid" style="margin-bottom:28px">${S.listings.map(l=>card(l)).join('')||'<p class="empty">No listings right now.</p>'}</div>
  <h2 style="margin-bottom:10px">Your listings</h2><div class="grid">${S.mine.map(l=>card(l,1)).join('')||'<p class="mute">Nothing listed. Use Sell on the Expiry watch page.</p>'}</div>`};
 
-V.orders=()=>head('Orders','Sales and purchases made through the marketplace.')+`<div class="panel">${tbl([{h:'Order',f:o=>o.id+(o.id===EX.order?pill():'')},{h:'Date',f:o=>o.date},{h:'Type',f:o=>o.type},{h:'Item',f:o=>`${esc(o.item)} x ${o.qty}`},{h:'With',f:o=>esc(o.party)},{h:'Total',r:1,f:o=>rp(o.total)},{h:'Status',f:o=>o.status},{h:'',f:o=>o.status==='Delivered'?'':`<button class="btn sm" data-adv="${o.id}">Mark ${o.status==='Pending'?'in transit':'delivered'}</button>`}],S.orders,'No orders yet.',o=>o.id===EX.order?'data-ex="order"':'')}</div>`;
+V.orders=()=>head('Orders','Sales and purchases made through the marketplace.')+`<div class="panel">${tbl([{h:'Order',f:o=>o.id},{h:'Date',f:o=>o.date},{h:'Type',f:o=>o.type},{h:'Item',f:o=>`${esc(o.item)} x ${o.qty}`},{h:'With',f:o=>esc(o.party)},{h:'Total',r:1,f:o=>rp(o.total)},{h:'Status',f:o=>o.status},{h:'',f:o=>o.status==='Delivered'?'':`<button class="btn sm" data-adv="${o.id}">Mark ${o.status==='Pending'?'in transit':'delivered'}</button>`}],S.orders,'No orders yet.')}</div>`;
 
 V.outlets=()=>head('Outlets','Stock position per outlet.')+`<div class="panel">${outletTable()}</div>`+
  `<div class="panel">${tbl([{h:'Outlet',f:o=>o},{h:'Stock value',r:1,f:o=>rp(sum(S.products.filter(p=>p.outlet===o),p=>p.qty*p.price))},{h:'Value expiring soon',r:1,f:o=>rp(sum(S.products.filter(p=>p.outlet===o&&isExp(p)),p=>p.qty*p.price))}],S.outlets)}</div>`;
@@ -144,7 +116,7 @@ const nextId=a=>Math.max(0,...a.map(x=>x.id))+1;
 const orderId=()=>'SS-'+(Math.max(1040,...S.orders.map(o=>parseInt(String(o.id).slice(3))||0))+1);
 const listed=pid=>sum(S.mine.filter(x=>x.pid===pid),x=>x.qty);
 const clamp=(n,lo,hi)=>Math.min(hi,Math.max(lo,Math.round(+n)||lo));
-function go(page,hl,after){hlKey=hl||null;pend=after||null;if((location.hash||'#dashboard')==='#'+page)render();else location.hash=page}
+function go(page){if((location.hash||'#dashboard')==='#'+page)render();else location.hash=page}
 
 function listDlg(id){const p=S.products.find(x=>x.id==id);if(!p)return;
  if(left(p)<0)return toast('Expired stock cannot be listed');
@@ -163,7 +135,7 @@ function buyDlg(id){const l=S.listings.find(x=>x.id==id);if(!l)return;
 
 function saleDlg(id){const l=S.mine.find(x=>x.id==id);if(!l)return;
  const calc=n=>{const t=n*l.price;return{t,fee:t*.03,net:t*.97}};
- modal('Record sale: '+esc(l.name),`<label>Units sold (${l.qty} listed)<input class="in" name="n" type="number" min="1" max="${l.qty}" value="${l.name===EX.name?Math.min(l.qty,EX.units):l.qty}" inputmode="numeric" required></label><label>Buyer<input class="in" name="b" value="${l.name===EX.name?EX.buyer:'Nearby buyer'}" required></label><div class="sum" id="sum"></div>`,'Record sale',f=>{
+ modal('Record sale: '+esc(l.name),`<label>Units sold (${l.qty} listed)<input class="in" name="n" type="number" min="1" max="${l.qty}" value="${l.qty}" inputmode="numeric" required></label><label>Buyer<input class="in" name="b" value="Nearby buyer" required></label><div class="sum" id="sum"></div>`,'Record sale',f=>{
   const n=clamp(f.get('n'),1,l.qty),c=calc(n),p=S.products.find(x=>x.id===l.pid);
   if(p)p.qty=Math.max(0,p.qty-n);
   S.orders.unshift({id:orderId(),date:iso(today),party:(f.get('b')||'').trim()||'Nearby buyer',type:'Sale',item:l.name,qty:n,total:c.t,status:'Pending'});
@@ -182,12 +154,7 @@ document.addEventListener('click',e=>{
  const a=e.target.closest('a');if(a&&dlg.open&&a.closest('.sheet'))dlg.close();
  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
  if('close' in d)dlg.close();
- if('more' in d){dlg.innerHTML=`<div class="sheet"><h2 style="margin-bottom:6px">More</h2>${NAV.slice(4).map(([id,l])=>`<a href="#${id}">${ic(id)}<span class="lb">${l}</span>${S.ui.guide?`<i class="sn">${stepOf(id).n}</i>`:''}</a>`).join('')}<button class="btn" data-close style="margin-top:14px;width:100%">Close</button></div>`;dlg.showModal()}
- if('guide' in d){S.ui.guide=d.guide==='1';save();render()}
- if('exgo' in d){const n=+d.exgo,m=exProd();
-  if(n===2)go('expiry','milk');
-  else if(n===3){if(m&&left(m)>=0)go('expiry','milk',()=>listDlg(m.id));else go('marketplace')}
-  else go('orders','order')}
+ if('more' in d){dlg.innerHTML=`<div class="sheet"><h2 style="margin-bottom:6px">More</h2>${NAV.slice(4).map(([id,l])=>`<a href="#${id}">${ic(id)}<span class="lb">${l}</span></a>`).join('')}<button class="btn" data-close style="margin-top:14px;width:100%">Close</button></div>`;dlg.showModal()}
  if(d.tab){tab=d.tab;render()}
  if(d.list)listDlg(d.list);
  if(d.buy)buyDlg(d.buy);
@@ -218,14 +185,13 @@ dlg.addEventListener('click',e=>{if(e.target!==dlg)return;const r=dlg.getBoundin
 
 function render(){
  today=midnight();
- const r=(location.hash||'#dashboard').slice(1),k=V[r]?r:'dashboard',n=S.products.filter(isExp).length,g=S.ui.guide;
- $('#nav').innerHTML=NAV.map(([id,l])=>`<a href="#${id}" class="${id===k?'on':''}" ${id===k?'aria-current="page"':''}>${ic(id)}<span class="lb">${l}</span>${id==='expiry'&&n?`<span class="n">${n}</span>`:''}${g?`<i class="sn" title="Process step ${stepOf(id).n}">${stepOf(id).n}</i>`:''}</a>`).join('');
+ const r=(location.hash||'#dashboard').slice(1),k=V[r]?r:'dashboard',n=S.products.filter(isExp).length;
+ $('#nav').innerHTML=NAV.map(([id,l])=>`<a href="#${id}" class="${id===k?'on':''}" ${id===k?'aria-current="page"':''}>${ic(id)}<span class="lb">${l}</span>${id==='expiry'&&n?`<span class="n">${n}</span>`:''}</a>`).join('');
  $('#tabbar').innerHTML=[['dashboard','Home'],['inventory','Stock'],['expiry','Expiry'],['marketplace','Market']].map(([id,l])=>`<a class="tb ${id===k?'on':''}" href="#${id}">${ic(id)}${l}${id==='expiry'&&n?`<span class="n">${n}</span>`:''}</a>`).join('')+`<button class="tb ${['orders','outlets','reports','settings'].includes(k)?'on':''}" data-more>${ic('more')}More</button>`;
  $('#bell').innerHTML=ic('bell')+(n?`<i>${n}</i>`:'');
- $('#view').innerHTML=flow(k)+V[k]();document.title='StockSync, '+NAME[k];
- if(k!==lastK){lastK=k;if(!hlKey)scrollTo(0,0)}
- if(hlKey){const el=$('[data-ex="'+hlKey+'"]');hlKey=null;if(el){el.classList.add('flash');el.scrollIntoView({block:'center',behavior:'smooth'})}}
- if(pend){const f=pend;pend=null;f()}}
+ $('#view').innerHTML=V[k]();document.title='StockSync, '+NAME[k];
+ if(k!==lastK){lastK=k;scrollTo(0,0)}
+}
 window.addEventListener('hashchange',()=>{if(dlg.open)dlg.close();render()});
 matchMedia('(max-width:900px)').addEventListener('change',render);
 render();

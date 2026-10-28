@@ -23,7 +23,6 @@ const L=(id,seller,km,name,brand,qty,regular,days,img)=>({id,seller,km,name,bran
 window.SEED={
  outlet:'all',
  settings:{plan:'Basic',alertDays:7,whatsapp:true,erp:{on:true,type:'ERP + POS',url:'https://api.example-store.co.id/v1',last:Date.now()-18*6e4}},
- ui:{guide:true},
  outlets:['Kemang','BSD','Depok','Warung Sari Rasa'],
  products:prods,
  listings:[
