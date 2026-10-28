@@ -14,6 +14,12 @@ To publish on GitHub Pages: push the folder to a repository, then Settings > Pag
 
 ## What it does
 
+## Visuals
+
+- Maps: drawn in SVG (works offline, schematic, not to scale). Outlets map on Dashboard and Outlets, sellers-near-you map on Marketplace. Tap a pin to jump to its stock or listings.
+- Product illustrations: `assets/products/*.svg`, picked by the `img` key in `js/data.js`.
+- Shop fronts: generated per outlet or seller in `shop()` in `js/app.js`.
+
 ## Pages
 
 | Page | Function |
