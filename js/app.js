@@ -25,12 +25,12 @@ const img=n=>`<img src="assets/products/${n||'box'}.svg" alt="">`;
 const ago=t=>{const m=Math.round((Date.now()-t)/6e4);if(m<1)return'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+(h===1?' hour ago':' hours ago');const d=Math.round(h/24);return d+(d===1?' day ago':' days ago')};
 const note=(t,s)=>{S.activity.unshift({t,s,at:Date.now()});S.activity=S.activity.slice(0,12)};
 const toast=m=>{const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.append(e);setTimeout(()=>e.remove(),2200)};
-let tab='value',q='',lastK='';
+let q='',lastK='';
 
 /* icons: plain 24px strokes, drawn for this project */
-const IC={dashboard:'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z',inventory:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',expiry:'M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2',marketplace:'M3 9l2-5h14l2 5M3 9a3 3 0 006 0 3 3 0 006 0 3 3 0 006 0M5 13v8h14v-8M10 21v-5h4v5',orders:'M8 3h8v4H8zM6 5H5v16h14V5h-1M9 12h6M9 16h6',outlets:'M12 21s-7-6-7-12a7 7 0 0114 0c0 6-7 12-7 12zM12 7a2.5 2.5 0 100 5 2.5 2.5 0 000-5',reports:'M4 20V11M10 20V4M16 20v-7M2 21h20',settings:'M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6',bell:'M6 9a6 6 0 0112 0c0 6 2 7 2 8H4c0-1 2-2 2-8zM10 21h4',more:'M5 12h.01M12 12h.01M19 12h.01',leaf:'M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l8-8',coin:'M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v10M9.5 9.5h4a1.8 1.8 0 010 3.6h-3a1.8 1.8 0 000 3.4h4',pinio:'M12 21s-7-6-7-12a7 7 0 0114 0c0 6-7 12-7 12z',alert:'M12 3 2 20h20zM12 10v5M12 18h.01',cube:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8'};
+const IC={dashboard:'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z',inventory:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',expiry:'M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2',marketplace:'M3 9l2-5h14l2 5M3 9a3 3 0 006 0 3 3 0 006 0 3 3 0 006 0M5 13v8h14v-8M10 21v-5h4v5',orders:'M8 3h8v4H8zM6 5H5v16h14V5h-1M9 12h6M9 16h6',outlets:'M12 21s-7-6-7-12a7 7 0 0114 0c0 6-7 12-7 12zM12 7a2.5 2.5 0 100 5 2.5 2.5 0 000-5',reports:'M4 20V11M10 20V4M16 20v-7M2 21h20',settings:'M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6',bell:'M6 9a6 6 0 0112 0c0 6 2 7 2 8H4c0-1 2-2 2-8zM10 21h4',more:'M5 12h.01M12 12h.01M19 12h.01',leaf:'M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l8-8',coin:'M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v10M9.5 9.5h4a1.8 1.8 0 010 3.6h-3a1.8 1.8 0 000 3.4h4',pinio:'M12 21s-7-6-7-12a7 7 0 0114 0c0 6-7 12-7 12z',alert:'M12 3 2 20h20zM12 10v5M12 18h.01',trash:'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',cube:'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8'};
 const ic=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"${n==='more'?' stroke-width="3"':''}/></svg>`;
-const NAV=[['dashboard','Dashboard'],['inventory','Inventory'],['expiry','Expiry watch'],['marketplace','Marketplace'],['orders','Orders'],['outlets','Outlets'],['reports','Reports'],['settings','Settings']];
+const NAV=[['dashboard','Dashboard'],['inventory','Inventory'],['expiry','Expiry watch'],['marketplace','Marketplace'],['orders','Orders'],['reports','Reports'],['settings','Settings']];
 
 const NAME=Object.fromEntries(NAV);
 const tbl=(cols,rows,empty='Nothing here yet.',attr=()=>'',cls='')=>rows.length?`<table class="${cls}"><thead><tr>${cols.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr ${attr(r)}>${cols.map(c=>`<td class="${c.r?'r':''}" data-label="${c.h}">${c.f(r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<p class="empty">${empty}</p>`;
@@ -81,7 +81,7 @@ function sellerMap(){const[W,H]=mapSize(mob()?360:400),cx=W/2,cy=H/2+6,sc=Math.m
  const body=pts.map(p=>`<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="#E08A1E" stroke-width="1.6" stroke-dasharray="3 4" opacity=".75"/>`).join('')+
   pts.map(p=>pin(p.x,p.y,'#E8731F',`data-pin="${esc(p.name)}" tabindex="0" role="button" aria-label="${esc(p.name)}, ${p.km} km"`)+lbl(p.x,p.y,W,p.name.split(',')[0],`${p.km} km, ${p.n} item${p.n>1?'s':''}`)).join('');
  const me=`<circle class="pulse" cx="${cx}" cy="${cy}" r="10" fill="#2352C8" stroke="none"/><circle cx="${cx}" cy="${cy}" r="9" fill="#2352C8" stroke="#fff" stroke-width="3.5"/><text class="lbl" x="${cx}" y="${cy+26}" text-anchor="middle">You</text>`;
- return `<div class="panel mapp"><div class="ph"><h2>Sellers near you</h2><span class="mute small">${pts.length} sellers within ${Math.max(0,...pts.map(p=>p.km))} km. Tap a pin.</span></div><svg class="mp" viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of nearby sellers">${mapBase(W,H)}${rings}${body}${me}</svg><div class="legend"><span><i style="background:#2352C8"></i>You</span><span><i style="background:#E8731F"></i>Seller with surplus stock</span><span class="mute">Schematic map, not to scale</span></div></div>`}
+ return `<div class="panel mapp"><div class="ph"><h2>Sellers near you</h2><span class="mute small">${pts.length} sellers within ${Math.max(0,...pts.map(p=>p.km))} km. Tap a pin.</span></div><svg class="mp" viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of nearby sellers">${mapBase(W,H)}${rings}${body}${me}</svg><p class="cap">Schematic map, not to scale.</p></div>`}
 
 const OPOSM={Kemang:[.46,.3],BSD:[.2,.6],Depok:[.44,.84],'Warung Sari Rasa':[.82,.5]};
 const OPOS={Kemang:[.5,.36],BSD:[.17,.64],Depok:[.58,.82],'Warung Sari Rasa':[.84,.54]};
@@ -98,30 +98,21 @@ const V={};
 V.dashboard=()=>{
  const P=prods(),val=sum(P,p=>p.qty*p.price),ex=P.filter(isExp).sort((a,b)=>left(a)-left(b)),lo=P.filter(isLow);
  const h=new Date().getHours(),g=h<11?'Good morning':h<17?'Good afternoon':'Good evening';
- const sold=sum(S.orders.filter(o=>o.type==='Sale'),o=>o.qty);
- const MM={value:['Total stock value',val,[.62,.7,.74,.79,.86,.92,1],rpm],sold:['Units sold',sold,[.5,.7,.6,.85,.75,.65,1],n=>Math.round(n)],exp:['Items near expiry',ex.length,[1.5,1.4,1.3,1.2,1.1,1.05,1],n=>Math.round(n)],low:['Low stock',lo.length,[.7,.8,.8,.9,1,1.1,1],n=>Math.round(n)]};
- const m=MM[tab],ser=m[2].map(s=>tab==='value'?m[1]*s:Math.round(m[1]*s));
- const cats=Object.entries(P.reduce((a,p)=>(a[p.cat]=(a[p.cat]||0)+p.qty*p.price,a),{})).sort((a,b)=>b[1]-a[1]);
  const day=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
- return `<section class="hero"><div class="hero-t"><p class="eyebrow">${day}</p><h1>${g}, Josephine</h1><p>${ex.length?`${ex.length} products expire within ${S.settings.alertDays} days. Start with the ones marked in red.`:'Nothing is close to expiry.'}</p><div class="row">${outSel()}<a class="btn" href="#expiry">Review expiring stock</a></div></div>${skyline}</section>`+
- `<div class="panel kpis"><div>${kic('cube','#2352C8')}<span>Total stock value</span><b>${rpm(val)}</b><small class="mute">${P.length} products</small></div>
- <div>${kic('alert','#E08A1E')}<span>Items near expiry</span><b>${ex.length}</b><small class="${ex.some(p=>left(p)<=3)?'bad':'mute'}">${ex.filter(p=>left(p)<=3).length} need action</small></div>
- <div>${kic('inventory','#C0366C')}<span>Low stock items</span><b>${lo.length}</b><small class="mute">across ${new Set(lo.map(p=>p.outlet)).size} outlet${new Set(lo.map(p=>p.outlet)).size===1?'':'s'}</small></div></div>
- <div class="cols"><div>
- ${outletMap()}
- <div class="panel"><div class="ph"><h2>Inventory overview</h2><div class="tabs">${[['value','Stock value'],['sold','Units sold'],['exp','Near expiry'],['low','Low stock']].map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div></div>
- <div class="ov"><div class="pb">${chart(ser,m[3])}</div><div class="pb"><h2 style="margin-bottom:14px">Categories by value</h2>${cats.map(([c,v])=>`<div class="cat"><div><span>${c}</span><span>${rpm(v)}</span></div><i><b style="width:${val?Math.round(v/val*100):0}%"></b></i></div>`).join('')}</div></div></div>
- <div class="panel"><div class="ph"><h2>Stock by outlet</h2><a class="link" href="#outlets">View all outlets</a></div>${outletTable()}</div></div>
- <div><div class="panel"><div class="ph"><h2>Expiry watch</h2><a class="link" href="#expiry">View all</a></div>${ex.slice(0,3).map(expRow).join('')||'<p class="empty">All clear.</p>'}</div>
- <div class="panel"><div class="ph"><h2>Recent activity</h2></div>${S.activity.slice(0,5).map(a=>`<div class="li"><div class="t"><b style="font-weight:500">${esc(a.t)}</b><span>${esc(a.s)}, ${ago(a.at)}</span></div></div>`).join('')}</div>
- <div class="promo"><h2>Need stock? Check what others are selling.</h2><p>Other retailers list surplus at about half the regular price.</p><a class="btn" href="#marketplace">Go to marketplace</a></div></div></div>`};
+ const trend=[.62,.7,.74,.79,.86,.92,1].map(k=>val*k),urgent=ex.filter(p=>left(p)<=3).length,lowO=new Set(lo.map(p=>p.outlet)).size;
+ return `<section class="hero"><div class="hero-t"><p class="eyebrow">${day}</p><h1>${g}, Josephine</h1><p>${ex.length?`${ex.length} products expire within ${S.settings.alertDays} days.`:'Nothing is close to expiry.'}</p><div class="row">${outSel()}</div></div>${skyline}</section>
+ <div class="panel kpis"><div>${kic('cube','#2352C8')}<span>Total stock value</span><b>${rpm(val)}</b><small class="mute">${P.length} products</small></div>
+ <div>${kic('alert','#E08A1E')}<span>Items near expiry</span><b>${ex.length}</b><small class="${urgent?'bad':'mute'}">${urgent} need action</small></div>
+ <div>${kic('inventory','#C0366C')}<span>Low stock items</span><b>${lo.length}</b><small class="mute">across ${lowO} outlet${lowO===1?'':'s'}</small></div></div>
+ <div class="cols"><div>${outletMap()}<div class="panel pv-chart"><div class="ph"><h2>Stock value, last 7 days</h2></div><div class="pb">${chart(trend,rpm)}</div></div></div>
+ <div><div class="panel pv-exp"><div class="ph"><h2>Expiry watch</h2><a class="link" href="#expiry">View all</a></div>${ex.slice(0,3).map(expRow).join('')||'<p class="empty">All clear.</p>'}</div>
+ <div class="panel pv-act"><div class="ph"><h2>Recent activity</h2></div>${S.activity.slice(0,4).map(a=>`<div class="li"><div class="t"><b style="font-weight:500">${esc(a.t)}</b><span>${esc(a.s)}, ${ago(a.at)}</span></div></div>`).join('')}</div></div></div>`};
 const expRow=p=>`<div class="li">${thumb(p.img)}<div class="t"><b style="font-weight:500">${esc(p.name)}</b><span>${esc(p.brand)}, ${p.outlet}</span><span class="${dayCls(left(p))}">${dayTxt(left(p))}</span>${fresh(p)}</div><div class="rt"><span>${p.qty} units</span><button class="btn sm" data-list="${p.id}">Sell</button></div></div>`;
-const outletTable=()=>tbl([{h:'Outlet',f:o=>`<span class="oname">${shop(o,30)}${esc(o)}</span>`},{h:'Products',r:1,f:o=>S.products.filter(p=>p.outlet===o).length},{h:'In stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&p.qty>0).length},{h:'Low stock',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isLow(p)).length},{h:'Expiring soon',r:1,f:o=>S.products.filter(p=>p.outlet===o&&isExp(p)).length},{h:'Status',f:o=>{const s=status(o);return `<span class="${s[1]}">${s[0]}</span>`}}],S.outlets,'Nothing here yet.',()=>'','t-out');
 
 V.inventory=()=>{
  const t=q.toLowerCase(),P=prods().filter(p=>!t||[p.name,p.brand,p.sku,p.outlet].join(' ').toLowerCase().includes(t));
  return head('Inventory',`${P.length} products${t?` matching "${esc(q)}"`:''}`,outSel()+'<button class="btn" id="csv">Download CSV</button><button class="btn pri" id="add">Add product</button>')+
- `<div class="panel">${tbl([{h:'Product',f:p=>`<span class="pc">${thumb(p.img,'sm')}<span><b style="font-weight:500">${esc(p.name)}</b><span class="mute sub">${esc(p.brand)}, ${p.sku}</span></span></span>`},{h:'Outlet',f:p=>p.outlet},{h:'Category',f:p=>p.cat},{h:'Price',r:1,f:p=>rp(p.price)},{h:'Quantity',r:1,f:p=>`<span class="${isLow(p)?'bad':''}">${p.qty}</span> <span class="mute">/ min ${p.min}</span>`},{h:'Expiry',f:p=>`<span class="${dayCls(left(p))}">${dayTxt(left(p))}</span>`},{h:'',f:p=>`<div class="act"><button class="btn sm" data-qty="${p.id}:-1" aria-label="Remove one">-</button><button class="btn sm" data-qty="${p.id}:1" aria-label="Add one">+</button><button class="btn sm" data-del="${p.id}">Delete</button></div>`}],P,'No product matches that search.',()=>'','t-inv')}</div>`};
+ `<div class="panel">${tbl([{h:'Product',f:p=>`<span class="pc">${thumb(p.img,'sm')}<span><b style="font-weight:500">${esc(p.name)}</b><span class="mute sub">${esc(p.brand)}, ${p.outlet}</span></span></span>`},{h:'Price',r:1,f:p=>rp(p.price)},{h:'Quantity',r:1,f:p=>`<span class="qs"><button class="qb" data-qty="${p.id}:-1" aria-label="Remove one">&minus;</button><b class="${isLow(p)?'bad':''}">${p.qty}</b><button class="qb" data-qty="${p.id}:1" aria-label="Add one">+</button></span><span class="mute qmin">min ${p.min}</span>`},{h:'Expiry',f:p=>`<span class="${dayCls(left(p))}">${dayTxt(left(p))}</span>`},{h:'',f:p=>`<button class="btn sm ic" data-del="${p.id}" aria-label="Delete ${esc(p.name)}" title="Delete">${ic('trash')}</button>`}],P,'No product matches that search.',()=>'','t-inv')}</div>`};
 
 V.expiry=()=>{const P=prods().filter(isExp).sort((a,b)=>left(a)-left(b));
  return head('Expiry watch',`Products expiring within ${S.settings.alertDays} days. Change this in Settings.`,outSel())+`<div class="panel">${P.map(expRow).join('')||'<p class="empty">Nothing is close to expiry.</p>'}</div>`};
@@ -138,21 +129,14 @@ V.marketplace=()=>{
 
 V.orders=()=>head('Orders','Sales and purchases made through the marketplace.')+`<div class="panel">${tbl([{h:'Order',f:o=>o.id},{h:'Date',f:o=>o.date},{h:'Type',f:o=>o.type},{h:'Item',f:o=>`${esc(o.item)} x ${o.qty}`},{h:'With',f:o=>esc(o.party)},{h:'Total',r:1,f:o=>rp(o.total)},{h:'Status',f:o=>`<span class="${o.status==='Delivered'?'ok':o.status==='Pending'?'mute':'warn'}">${o.status}</span>${trk(o.status)}`},{h:'',f:o=>o.status==='Delivered'?'':`<button class="btn sm" data-adv="${o.id}">Mark ${o.status==='Pending'?'in transit':'delivered'}</button>`}],S.orders,'No orders yet.',()=>'','t-ord')}</div>`;
 
-V.outlets=()=>head('Outlets','Stock position per outlet.')+outletMap()+
- `<div class="grid ocg">${S.outlets.map(o=>{const P=S.products.filter(p=>p.outlet===o),st=status(o),val=sum(P,p=>p.qty*p.price),ev=sum(P.filter(isExp),p=>p.qty*p.price),pct=val?Math.round(ev/val*100):0,c=shopColor(o);
-  return `<div class="panel oc"><div class="oc-h" style="background:linear-gradient(135deg,${c},#12306E)">${shop(o,58)}<span class="chip ${st[1]}">${st[0]}</span></div><div class="pb"><h2>${esc(o)}</h2>
-  <div class="stats"><div><b>${P.length}</b><span>Products</span></div><div><b>${P.filter(isLow).length}</b><span>Low stock</span></div><div><b class="${P.filter(isExp).length?'warn':''}">${P.filter(isExp).length}</b><span>Expiring</span></div></div>
-  <div class="vrow"><span>Stock value</span><b>${rp(val)}</b></div><div class="vbar"><i style="width:${100-pct}%"></i><i class="r" style="width:${pct}%"></i></div><p class="mute small">${rp(ev)} (${pct}%) expires within ${S.settings.alertDays} days</p></div></div>`}).join('')}</div>`;
-
 V.reports=()=>{
  const sales=S.orders.filter(o=>o.type==='Sale'&&o.status==='Delivered'),u=sum(sales,o=>o.qty),got=sum(sales,o=>o.total*.97),risk=sum(S.products.filter(isExp),p=>p.qty*p.price);
  const kg=u*.5,co2=kg*2.5,tot=sum(S.products,p=>p.qty*p.price),mxv=Math.max(0,...S.outlets.map(o=>sum(S.products.filter(p=>p.outlet===o),p=>p.qty*p.price)));
  return head('Reports','What matching has recovered so far. Counts delivered sales only.')+
  `<div class="panel kpis"><div>${kic('coin','#1E7A4A')}<span>Revenue recovered</span><b>${rpm(got)}</b><small class="mute">after 3% seller fee</small></div><div>${kic('leaf','#12908A')}<span>Food saved</span><b>${kg.toFixed(0)} kg</b><small class="mute">${u} units delivered before expiry</small></div><div>${kic('leaf','#2352C8')}<span>CO2e avoided</span><b>${co2.toFixed(0)} kg</b><small class="mute">estimate, see note</small></div></div>
- <div class="grid2"><div class="panel"><div class="ph"><h2>Stock at risk</h2></div><div class="pb dn-row">${donut(tot?Math.round(risk/tot*100):0,'#E08A1E',(tot?Math.round(risk/tot*100):0)+'%','at risk')}<div class="dn-l"><p><i style="background:#E08A1E"></i>Expires within ${S.settings.alertDays} days<b>${rp(risk)}</b></p><p><i style="background:#E0E8F3"></i>Safe for now<b>${rp(tot-risk)}</b></p></div></div></div>
+ <div class="grid2"><div class="panel"><div class="ph"><h2>Stock at risk</h2></div><div class="pb dn-row">${donut(tot?Math.round(risk/tot*100):0,'#E08A1E',(tot?Math.round(risk/tot*100):0)+'%','at risk')}<div class="dn-l"><p><i style="background:#E08A1E"></i>Expires within ${S.settings.alertDays} days<b>${rp(risk)}</b></p><p><i style="background:#1E7A4A"></i>Recoverable at half price<b>${rp(risk*.485)}</b></p></div></div></div>
  <div class="panel"><div class="ph"><h2>Value by outlet</h2></div><div class="pb">${S.outlets.map(o=>{const v=sum(S.products.filter(p=>p.outlet===o),p=>p.qty*p.price);return `<div class="ob">${shop(o,28)}<div><div class="ob-t"><span>${esc(o)}</span><b>${rpm(v)}</b></div><i class="vbar"><i style="width:${mxv?Math.round(v/mxv*100):0}%"></i></i></div></div>`}).join('')}</div></div></div>
- <div class="panel pb"><p>Stock value that expires within ${S.settings.alertDays} days: <b>${rp(risk)}</b>. Selling it at half price would recover about <b>${rp(risk*.485)}</b> after the seller fee.</p>
- <p class="mute" style="font-size:13px;margin-top:10px">Assumptions: 0.5 kg per unit and 2.5 kg CO2e per kg of food. Replace both with your own figures in js/app.js (search "kg").</p></div>`};
+ <p class="mute small cap">Assumptions: 0.5 kg per unit and 2.5 kg CO2e per kg of food. Replace both with your own figures in js/app.js (search "kg").</p>`};
 
 V.settings=()=>{const s=S.settings,T=[['Free','Rp 0','Basic dashboard, expiry alerts, up to 50 SKUs'],['Basic','Rp 200.000 per month','Live ERP/POS sync, manual matching'],['Premium','Rp 400.000 per month','Forecasting and automatic matching']];
  const e=s.erp;
@@ -219,7 +203,6 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
  if('close' in d)dlg.close();
  if('more' in d){dlg.innerHTML=`<div class="sheet"><h2 style="margin-bottom:6px">More</h2>${NAV.slice(4).map(([id,l])=>`<a href="#${id}">${ic(id)}<span class="lb">${l}</span></a>`).join('')}<button class="btn" data-close style="margin-top:14px;width:100%">Close</button></div>`;dlg.showModal()}
- if(d.tab){tab=d.tab;render()}
  if(d.list)listDlg(d.list);
  if(d.buy)buyDlg(d.buy);
  if(d.qty){const[i,n]=d.qty.split(':'),p=S.products.find(x=>x.id==i);if(p){p.qty=Math.max(0,p.qty+ +n);save();render()}}
@@ -249,10 +232,9 @@ dlg.addEventListener('click',e=>{if(e.target!==dlg)return;const r=dlg.getBoundin
 
 function render(){
  today=midnight();
- const r=(location.hash||'#dashboard').slice(1),k=V[r]?r:'dashboard',n=S.products.filter(isExp).length;
+ const r=(location.hash||'#dashboard').slice(1),k=V[r]?r:'dashboard';if(r!==k)history.replaceState(null,'','#'+k);document.body.dataset.page=k;const n=S.products.filter(isExp).length;
  $('#nav').innerHTML=NAV.map(([id,l])=>`<a href="#${id}" class="${id===k?'on':''}" ${id===k?'aria-current="page"':''}>${ic(id)}<span class="lb">${l}</span>${id==='expiry'&&n?`<span class="n">${n}</span>`:''}</a>`).join('');
- $('#tabbar').innerHTML=[['dashboard','Home'],['inventory','Stock'],['expiry','Expiry'],['marketplace','Market']].map(([id,l])=>`<a class="tb ${id===k?'on':''}" href="#${id}">${ic(id)}${l}${id==='expiry'&&n?`<span class="n">${n}</span>`:''}</a>`).join('')+`<button class="tb ${['orders','outlets','reports','settings'].includes(k)?'on':''}" data-more>${ic('more')}More</button>`;
- $('#bell').innerHTML=ic('bell')+(n?`<i>${n}</i>`:'');
+ $('#tabbar').innerHTML=[['dashboard','Home'],['inventory','Stock'],['expiry','Expiry'],['marketplace','Market']].map(([id,l])=>`<a class="tb ${id===k?'on':''}" href="#${id}">${ic(id)}${l}${id==='expiry'&&n?`<span class="n">${n}</span>`:''}</a>`).join('')+`<button class="tb ${['orders','reports','settings'].includes(k)?'on':''}" data-more>${ic('more')}More</button>`;
  $('#view').innerHTML=V[k]();document.title='StockSync, '+NAME[k];
  if(k!==lastK){lastK=k;scrollTo(0,0)}
 }
