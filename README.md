@@ -14,6 +14,8 @@ To publish on GitHub Pages: push the folder to a repository, then Settings > Pag
 
 ## What it does
 
+## Pages
+
 | Page | Function |
 | --- | --- |
 | Dashboard | Stock value, near-expiry and low-stock counts, 7-day chart, categories, outlet status, activity |
@@ -23,7 +25,7 @@ To publish on GitHub Pages: push the folder to a repository, then Settings > Pag
 | Orders | Track sales and purchases; delivering a purchase adds it to stock |
 | Outlets | Per-outlet stock position |
 | Reports | Revenue recovered, food saved, CO2e avoided |
-| Settings | Plan, alert window, WhatsApp alerts, reset |
+| Settings | ERP/POS connection, plan, alert window, WhatsApp alerts, reset |
 
 Data is stored in the browser (`localStorage`). Nothing is sent anywhere.
 
