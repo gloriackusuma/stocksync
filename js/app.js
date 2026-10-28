@@ -206,7 +206,7 @@ document.addEventListener('click',e=>{
  if(d.list)listDlg(d.list);
  if(d.buy)buyDlg(d.buy);
  if(d.qty){const[i,n]=d.qty.split(':'),p=S.products.find(x=>x.id==i);if(p){p.qty=Math.max(0,p.qty+ +n);save();render()}}
- if(d.del&&confirm('Delete this product?')){const id=+d.del;S.products=S.products.filter(x=>x.id!==id);S.mine=S.mine.filter(x=>x.pid!==id);save();render()}
+ if(d.del){const id=+d.del,pr=S.products.find(x=>x.id===id);if(pr)modal('Delete product',`<p>Delete <b>${esc(pr.name)}</b> from ${esc(pr.outlet)}? This cannot be undone.</p>`,'Delete',()=>{S.products=S.products.filter(x=>x.id!==id);S.mine=S.mine.filter(x=>x.pid!==id);save();render();toast('Product deleted')});dlg.querySelector('form .pri')?.classList.add('danger')}
  if(d.pull){S.mine=S.mine.filter(x=>x.id!=d.pull);save();render()}
  if(d.sold)saleDlg(d.sold);
  if(d.adv){const o=S.orders.find(x=>x.id===d.adv);if(o){o.status=o.status==='Pending'?'In transit':'Delivered';
