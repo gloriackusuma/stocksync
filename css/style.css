@@ -261,3 +261,37 @@ p.cap.small{border:0;background:none;padding:0 2px;margin-top:4px}
  .t-inv td:nth-child(5)>.btn.ic{width:40px;height:40px}
  .t-inv td:nth-child(3)::before,.t-inv td:nth-child(2)::before{display:none}
 }
+
+
+/* ---------- desktop refinements (min-width:901px only; mobile untouched) ---------- */
+@media(min-width:901px){
+ /* 1. user badge pinned to the far right edge of the top bar */
+ .top{padding:14px 20px 14px 28px}
+ #q{flex:1 1 auto;max-width:520px}
+ .me{margin-left:auto;flex:none;padding-left:16px}
+
+ /* 2. dropdowns: custom chevron with breathing room from the right edge */
+ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:8px 38px 8px 12px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%235A6B84' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px}
+ select:hover{border-color:var(--brand)}
+
+ /* 3. inventory quantity: roomier stepper, number and minimum */
+ .t-inv th:nth-child(3),.t-inv td:nth-child(3){white-space:nowrap}
+ .qs{gap:16px}
+ .qs b{min-width:3.5ch;font-variant-numeric:tabular-nums;font-size:15px}
+ .qb{width:32px;height:32px;flex:none}
+ .qmin{display:inline-block;margin-left:22px;min-width:56px;text-align:left;font-size:13px}
+ .t-inv td:nth-child(5){width:72px;text-align:center!important}
+ .btn.ic{width:36px;height:36px;color:var(--mute);background:#fff}
+ .btn.ic svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
+ .btn.ic:focus:not(:focus-visible){outline:none}
+ .btn.ic:active{background:#FBEAE8}
+
+ /* 4. "schematic map" note becomes a small pill on the map instead of a bare line under it */
+ .mapp{position:relative}
+ .mapp .cap{position:absolute;left:12px;bottom:12px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.92);font-size:12px;line-height:1.4;color:var(--mute);box-shadow:0 1px 3px rgba(18,48,110,.1);pointer-events:none}
+}
+/* delete confirmation button (all sizes) */
+.btn.pri.danger{background:var(--bad);border-color:var(--bad)}
+dialog p{margin:0}
