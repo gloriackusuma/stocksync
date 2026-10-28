@@ -7,17 +7,17 @@ const prods=[
 P('Fresh milk 1L','Diamond','Dairy','Kemang',48,20,18500,1,'milk'),
 P('Yogurt plain 500g','Elle & Vire','Dairy','BSD',32,15,32000,4,'yogurt'),
 P('Cooking oil 2L','Bimoli','Others','Depok',61,30,36500,7,'oil'),
-P('Mineral water 600ml','Aqua','Beverages','Kemang',420,150,3200,190,'box'),
-P('Iced tea 350ml','Teh Pucuk','Beverages','BSD',18,60,4200,60,'box'),
-P('Potato chips 68g','Chitato','Snacks','Depok',140,50,11500,45,'box'),
-P('Wafer 130g','Tango','Snacks','Kemang',25,40,9800,12,'box'),
-P('Instant noodles','Indomie','Others','Warung Sari Rasa',300,100,3100,120,'box'),
-P('UHT chocolate milk 200ml','Ultra','Dairy','Depok',90,40,6200,6,'milk'),
-P('Sliced bread','Sari Roti','Others','BSD',22,20,17000,3,'box'),
-P('Cheese slices 10pc','Kraft','Dairy','Kemang',14,20,38000,9,'box'),
-P('Lemon soda 390ml','Sprite','Beverages','Warung Sari Rasa',70,60,4800,85,'box'),
-P('Cream biscuits 135g','Roma','Snacks','Warung Sari Rasa',12,30,8500,30,'box'),
-P('Eggs 10pc','Telur Ayam','Others','Depok',10,25,27000,5,'box')
+P('Mineral water 600ml','Aqua','Beverages','Kemang',420,150,3200,190,'water'),
+P('Iced tea 350ml','Teh Pucuk','Beverages','BSD',18,60,4200,60,'tea'),
+P('Potato chips 68g','Chitato','Snacks','Depok',140,50,11500,45,'chips'),
+P('Wafer 130g','Tango','Snacks','Kemang',25,40,9800,12,'wafer'),
+P('Instant noodles','Indomie','Others','Warung Sari Rasa',300,100,3100,120,'noodles'),
+P('UHT chocolate milk 200ml','Ultra','Dairy','Depok',90,40,6200,6,'choco'),
+P('Sliced bread','Sari Roti','Others','BSD',22,20,17000,3,'bread'),
+P('Cheese slices 10pc','Kraft','Dairy','Kemang',14,20,38000,9,'cheese'),
+P('Lemon soda 390ml','Sprite','Beverages','Warung Sari Rasa',70,60,4800,85,'soda'),
+P('Cream biscuits 135g','Roma','Snacks','Warung Sari Rasa',12,30,8500,30,'biscuit'),
+P('Eggs 10pc','Telur Ayam','Others','Depok',10,25,27000,5,'eggs')
 ].map((p,i)=>(p.id=i+1,p.sku='SS-'+String(1000+i*7),p));
 const L=(id,seller,km,name,brand,qty,regular,days,img)=>({id,seller,km,name,brand,qty,regular,price:Math.round(regular/2),exp:iso(days),img});
 window.SEED={
@@ -29,8 +29,8 @@ window.SEED={
   L(1,'Toko Maju Jaya, Cipete',3.2,'Fresh milk 1L','Greenfields',60,19500,3,'milk'),
   L(2,'Minimart Berkah, Bintaro',7.9,'Cooking oil 2L','Fortune',40,35000,6,'oil'),
   L(3,'Kedai Lestari, Serpong',4.1,'Yogurt drink 250ml','Cimory',80,9500,4,'yogurt'),
-  L(4,'Toko Maju Jaya, Cipete',3.2,'Potato chips 68g','Lays',120,12000,10,'box'),
-  L(5,'Warung Bu Tini, Pamulang',9.4,'Instant noodles','Mie Sedaap',200,3000,15,'box')],
+  L(4,'Toko Maju Jaya, Cipete',3.2,'Potato chips 68g','Lays',120,12000,10,'chips'),
+  L(5,'Warung Bu Tini, Pamulang',9.4,'Instant noodles','Mie Sedaap',200,3000,15,'noodles')],
  mine:[],
  orders:[
   {id:'SS-1038',date:iso(-3),party:'Warung Sari Rasa',type:'Sale',item:'Fresh milk 1L',qty:20,total:185000,status:'Delivered'},
