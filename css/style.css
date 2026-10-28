@@ -23,7 +23,6 @@ svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-l
 #nav a.on{background:#fff;color:var(--navy);font-weight:600}
 #nav svg{width:20px;height:20px;flex:none}
 #nav .lb{flex:1;min-width:0;white-space:nowrap}
-#nav .sn,.sheet .sn{flex:none;width:19px;height:19px;border-radius:50%;border:1.5px solid currentColor;font:600 11px/16px "Schibsted Grotesk",sans-serif;text-align:center;font-style:normal;opacity:.75}
 #nav .n,.tb .n{margin-left:auto;background:var(--bad);color:#fff;font-size:12px;line-height:18px;min-width:20px;text-align:center;border-radius:10px}
 .tag{margin-top:auto;font-size:13px;color:rgba(255,255,255,.82);padding:10px;border:1px dashed rgba(255,255,255,.4);border-radius:var(--r)}
 .top{display:flex;align-items:center;gap:14px;padding:14px 28px;border-bottom:1px solid var(--line);background:var(--panel)}
@@ -139,34 +138,8 @@ dialog label.c{display:flex;gap:8px;align-items:center}
 .conn{display:grid;gap:12px;max-width:520px}
 .conn label{display:grid;gap:4px;color:var(--mute);font-size:13px}
 .li .rt{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none;font-size:13px}
-.pill{font:600 11px/1 "Schibsted Grotesk",sans-serif;font-style:normal;background:#FFF1DC;color:#8A4B00;border:1px solid #F2C48A;border-radius:10px;padding:3px 7px;margin-left:8px;vertical-align:2px;white-space:nowrap}
 .sheet a .lb{flex:1}
-.sheet .sn{color:var(--brand);width:22px;height:22px;line-height:19px;font-size:12px;opacity:1}
 
-/* process guide: the four steps of the service, tied to the pages that serve them */
-.flow{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:20px;position:relative}
-.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
-.st{position:relative;border:1px solid var(--line);border-radius:var(--r);background:var(--sky);padding:10px 12px;min-width:0}
-.st:not(:last-child)::after{content:"\2192";position:absolute;right:-18px;top:14px;color:var(--brand);font-size:15px}
-.st.on{background:#fff;border-color:var(--brand);box-shadow:0 0 0 2px rgba(35,82,200,.18)}
-.sh{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--navy)}
-.sh i{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid var(--brand);color:var(--brand);font:700 12px/1 "Schibsted Grotesk",sans-serif;font-style:normal}
-.st.on .sh i{background:var(--brand);color:#fff}
-.pg{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-.pg a{font-size:13px;padding:3px 10px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--navy)}
-.pg a:hover{border-color:var(--brand);color:var(--brand)}
-.pg a.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.pg.m{display:none}
-.fd{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:12px;align-items:stretch}
-.ft p+p{margin-top:4px;color:var(--mute)}
-.fx{background:linear-gradient(145deg,var(--navy),#0B2557);color:#fff;border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
-.fx span{font-size:12px;opacity:.75}.fx p{font-size:15px}
-.fx .btn{margin-top:auto;color:var(--navy);border:0;padding:6px 12px}
-.flow .hide{position:absolute;top:-22px;right:0;font-size:12px}
-.flowbar{text-align:right;margin:-8px 0 8px}
-.flash{animation:fl 1.4s ease-out 2}
-@keyframes fl{0%,100%{background:transparent}30%{background:#FFF1DC}}
-.li.flash{box-shadow:inset 3px 0 0 #E08A1E}
 
 @media(max-width:900px){
  html{scroll-padding-top:120px}
@@ -175,28 +148,9 @@ dialog label.c{display:flex;gap:8px;align-items:center}
  input,select,textarea,.in{font-size:16px}
  #tabbar{padding-left:max(4px,env(safe-area-inset-left));padding-right:max(4px,env(safe-area-inset-right))}
  .tb{min-height:48px;justify-content:center}
- .flow{padding:12px;margin-bottom:16px}
- .steps{gap:0;position:relative;grid-template-columns:repeat(4,1fr)}
- .steps::before{content:"";position:absolute;left:12.5%;right:12.5%;top:21px;height:2px;background:var(--line)}
- .st{background:none;border:0;padding:0 2px;text-align:center;box-shadow:none!important}
- .st::after{display:none}
- .st .pg{display:none}
- .sh{flex-direction:column;gap:6px;font-size:12px;line-height:1.15;position:relative}
- .sh i{width:30px;height:30px;font-size:14px;margin-top:6px}
- .st.on .sh i{box-shadow:0 0 0 4px rgba(35,82,200,.2)}
- .st:not(.on) .sh{color:var(--mute);font-weight:500}
- .fd{grid-template-columns:1fr;gap:10px}
- .pg.m{display:flex}
- .pg a{padding:8px 13px;font-size:14px}
- .fx .btn{width:100%;padding:10px 14px;margin-top:6px}
- .flow .hide{position:static;display:block;margin:10px 0 0 auto;padding:6px 0;font-size:13px}
- .flowbar{margin:-6px 0 6px}.flowbar .link{padding:8px 0;font-size:13px}
- .li{flex-wrap:wrap;padding:12px 14px}
- .li .t{flex:1 1 140px}
- .li .rt{flex-direction:row;align-items:center;margin-left:46px;flex:1 1 100%;justify-content:space-between}
- .li .pill{display:inline-block;margin:0 0 0 6px}
- td .pill{margin-left:6px}
- td:empty{display:none}
+ .li{padding:12px 14px}
+ .li .rt{gap:8px}
+ .li  td  td:empty{display:none}
  .grid .pb .row{gap:10px}.grid .pb .btn{flex:1}
  .conn{max-width:none}
  .panel.pb{max-width:none!important}
@@ -205,4 +159,4 @@ dialog label.c{display:flex;gap:8px;align-items:center}
  .sheet a{padding:15px 4px;min-height:48px}
 }
 @media(min-width:601px) and (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:380px){.sh{font-size:11px}h1{font-size:21px}.kpis{grid-auto-columns:86%}}
+@media(max-width:380px){h1{font-size:21px}.kpis{grid-auto-columns:86%}}
